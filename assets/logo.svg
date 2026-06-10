@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">AirDrop Media logo</title>
+  <desc id="desc">A blue app icon with AirDrop rings and a send arrow.</desc>
+  <defs>
+    <linearGradient id="bg" x1="18" y1="14" x2="110" y2="116" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2DD4BF"/>
+      <stop offset="0.48" stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#4F46E5"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#0F172A" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#bg)"/>
+  <g filter="url(#shadow)">
+    <circle cx="56" cy="72" r="7" fill="#FFFFFF"/>
+    <path d="M37.6 79.4a22 22 0 0 1 0-14.8" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+    <path d="M24.7 88.2a38 38 0 0 1 0-32.4" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity="0.82"/>
+    <path d="M74.4 79.4a22 22 0 0 0 0-14.8" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round"/>
+    <path d="M87.3 88.2a38 38 0 0 0 0-32.4" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round" opacity="0.82"/>
+    <path d="M75 35h28v28" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M101 37 69 69" fill="none" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round"/>
+  </g>
+</svg>

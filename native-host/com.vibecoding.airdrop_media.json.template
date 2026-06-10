@@ -1,0 +1,9 @@
+{
+  "name": "com.vibecoding.airdrop_media",
+  "description": "Open downloaded browser media in the macOS AirDrop sharing panel.",
+  "path": "__HOST_PATH__",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://__EXTENSION_ID__/"
+  ]
+}
