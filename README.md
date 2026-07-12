@@ -32,14 +32,39 @@ xcode-select --install
 
 ## Quick install
 
+Copy this into Terminal:
+
+```bash
+git clone https://github.com/zhulin025/airdrop-media-extension.git "$HOME/Applications/AirDropMedia" && cd "$HOME/Applications/AirDropMedia" && ./install.command
+```
+
+If you already downloaded the project:
+
 1. Download or clone this repository.
-2. Double-click `install.command`.
-3. The installer copies the extension folder path to your clipboard and opens the browser extension page.
-4. In Chrome or Edge, enable developer mode, click `Load unpacked`, and select the `extension/` folder.
-5. Return to the installer window and press Return. It detects the extension ID and installs the native host automatically.
-6. Reload the extension if the browser page was already open.
+2. Open Terminal in the project folder.
+3. Run:
+
+```bash
+./install.command
+```
+
+4. The installer copies the extension folder path to your clipboard and opens the browser extension page.
+5. In Chrome or Edge, enable developer mode, click `Load unpacked`, and select the `extension/` folder.
+6. Return to the installer window and press Return. It detects the extension ID and installs the native host automatically.
+7. Reload the extension if the browser page was already open.
 
 Browsers do not allow a normal local script to silently install an unpacked extension. That one confirmation in Chrome/Edge is still required.
+
+If you downloaded this project as a zip file, macOS may block double-clicking `install.command` because the script is not signed with an Apple Developer ID. Running it from Terminal avoids that Gatekeeper double-click warning.
+
+Optional double-click workaround:
+
+```bash
+xattr -dr com.apple.quarantine .
+chmod +x install.command scripts/install_native_host.sh
+```
+
+After that, double-clicking `install.command` should work. Only run this for code you downloaded from a source you trust.
 
 ## Manual install
 
@@ -76,6 +101,20 @@ If the same URL has already been downloaded and the file still exists locally, t
 - The native host is installed locally and is not suitable for Chrome Web Store distribution without additional packaging and review work.
 
 ## Troubleshooting
+
+### macOS says `install.command` cannot be opened
+
+This happens when the project was downloaded from the internet and macOS attaches a quarantine flag. Use the Terminal install path instead:
+
+```bash
+./install.command
+```
+
+Or remove the quarantine flag from this project folder:
+
+```bash
+xattr -dr com.apple.quarantine .
+```
 
 ### AirDrop does not open
 
