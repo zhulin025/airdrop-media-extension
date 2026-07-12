@@ -1,171 +1,170 @@
 # AirDrop Media
 
-AirDrop Media is a local Chrome/Edge extension for macOS. It lets you right-click an image, video, audio item, or direct media link on a web page, download it with the browser's normal download flow, and immediately open the macOS AirDrop panel for the downloaded file.
+AirDrop Media 是一个 macOS 上的 Chrome/Edge 浏览器扩展。它可以让你在网页上右键图片、视频、音频或直接媒体链接，先用浏览器正常下载文件，然后自动打开 macOS AirDrop 隔空投送面板。
 
 ![AirDrop Media logo](assets/logo.svg)
 
-## Features
+## 功能
 
-- Adds a browser context menu item: `下载并用 AirDrop 发送`
-- Downloads media to your browser's default downloads folder
-- Opens the macOS AirDrop sharing panel after the download completes
-- Reuses an existing completed download when the same URL has already been downloaded
-- Avoids duplicate downloads while the same URL is still downloading
-- Supports Chrome and Microsoft Edge on macOS
+- 在浏览器右键菜单中增加：`下载并用 AirDrop 发送`
+- 使用浏览器默认下载流程，把媒体保存到默认下载目录
+- 下载完成后自动打开 macOS AirDrop 面板
+- 如果同一个 URL 已经下载过，并且本地文件还存在，会直接打开 AirDrop，不重复下载
+- 如果同一个 URL 正在下载，会等待下载完成后再打开 AirDrop
+- 支持 macOS 上的 Google Chrome 和 Microsoft Edge
 
-## How it works
+## 工作原理
 
-Browser extensions cannot directly call macOS AirDrop from the page sandbox. This project uses two parts:
+浏览器扩展不能直接从网页沙盒里调用 macOS AirDrop，所以这个项目分成两部分：
 
-1. `extension/`: a Manifest V3 browser extension that adds the right-click menu, starts downloads, tracks completion, and sends the local file path to a native host.
-2. `native-host/`: a small Swift native messaging host that receives the file path and opens the macOS AirDrop sharing service.
+1. `extension/`：Manifest V3 浏览器扩展，负责右键菜单、下载文件、监听下载完成，并把本地文件路径发给 native host。
+2. `native-host/`：一个 Swift 写的本机程序，通过 Chrome/Edge Native Messaging 接收文件路径，然后调用 macOS 的 AirDrop 分享服务。
 
-## Requirements
+## 系统要求
 
-- macOS with AirDrop available
-- Google Chrome or Microsoft Edge
-- Xcode Command Line Tools, for compiling the Swift native host:
+- macOS，并且 AirDrop 可用
+- Google Chrome 或 Microsoft Edge
+- Xcode Command Line Tools，用来编译 Swift native host：
 
 ```bash
 xcode-select --install
 ```
 
-## Quick install
+## 快速安装
 
-Copy this into Terminal:
+把下面这行复制到 Terminal 里运行：
 
 ```bash
 git clone https://github.com/zhulin025/airdrop-media-extension.git "$HOME/Applications/AirDropMedia" && cd "$HOME/Applications/AirDropMedia" && ./install.command
 ```
 
-If you already downloaded the project:
+如果你已经下载了这个项目：
 
-1. Download or clone this repository.
-2. Open Terminal in the project folder.
-3. Run:
+1. 打开 Terminal，进入项目目录。
+2. 运行：
 
 ```bash
 ./install.command
 ```
 
-4. The installer copies the extension folder path to your clipboard and opens the browser extension page.
-5. In Chrome or Edge, enable developer mode, click `Load unpacked`, and select the `extension/` folder.
-6. Return to the installer window and press Return. It detects the extension ID and installs the native host automatically.
-7. Reload the extension if the browser page was already open.
+3. 安装器会把扩展目录复制到剪贴板，并打开浏览器扩展管理页面。
+4. 在 Chrome 或 Edge 里开启开发者模式，点击 `Load unpacked` / `加载已解压的扩展程序`，选择项目里的 `extension/` 文件夹。
+5. 回到安装器窗口，按回车。安装器会自动识别扩展 ID，并安装 native host。
+6. 如果扩展页面已经打开，重新加载一次这个扩展。
 
-Browsers do not allow a normal local script to silently install an unpacked extension. That one confirmation in Chrome/Edge is still required.
+浏览器出于安全限制，不允许普通本地脚本静默安装未打包扩展。所以 Chrome/Edge 里的 `Load unpacked` 这一步仍然需要你手动确认一次。
 
-If you downloaded this project as a zip file, macOS may block double-clicking `install.command` because the script is not signed with an Apple Developer ID. Running it from Terminal avoids that Gatekeeper double-click warning.
+如果你是下载 zip 文件得到这个项目，macOS 可能会阻止双击 `install.command`，提示无法验证安全性。这是因为脚本没有 Apple Developer ID 签名。建议直接用 Terminal 运行 `./install.command`，这样不会触发双击脚本的 Gatekeeper 提示。
 
-Optional double-click workaround:
+如果你一定要双击运行，可以先在项目目录执行：
 
 ```bash
 xattr -dr com.apple.quarantine .
 chmod +x install.command scripts/install_native_host.sh
 ```
 
-After that, double-clicking `install.command` should work. Only run this for code you downloaded from a source you trust.
+执行后再双击 `install.command`。只对你信任来源的代码这样做。
 
-## Manual install
+## 手动安装
 
-1. Open your browser's extension page:
-   - Chrome: `chrome://extensions`
-   - Edge: `edge://extensions`
-2. Enable developer mode.
-3. Click `Load unpacked` and select the `extension/` folder in this project.
-4. Copy the loaded extension ID.
-5. Install the native messaging host:
+1. 打开浏览器扩展管理页面：
+   - Chrome：`chrome://extensions`
+   - Edge：`edge://extensions`
+2. 开启开发者模式。
+3. 点击 `Load unpacked` / `加载已解压的扩展程序`，选择项目里的 `extension/` 文件夹。
+4. 复制加载后的扩展 ID。
+5. 安装 native host：
 
 ```bash
 ./scripts/install_native_host.sh <extension_id>
 ```
 
-6. Reload the extension from the browser extension page.
+6. 回到浏览器扩展页面，重新加载这个扩展。
 
-## Usage
+## 使用方式
 
-1. Open a web page with an image, video, audio item, or direct media link.
-2. Right-click the media.
-3. Choose `下载并用 AirDrop 发送`.
-4. Wait for the browser download to finish.
-5. Select the receiving device in the macOS AirDrop panel.
+1. 打开包含图片、视频、音频或直接媒体链接的网页。
+2. 右键目标媒体。
+3. 点击 `下载并用 AirDrop 发送`。
+4. 等待浏览器下载完成。
+5. 在 macOS AirDrop 面板里选择接收设备。
 
-If the same URL has already been downloaded and the file still exists locally, the extension skips the download and opens AirDrop directly.
+如果同一个 URL 已经下载过，并且本地文件还存在，扩展会跳过下载，直接打开 AirDrop。
 
-## Limitations
+## 限制
 
-- AirDrop still requires you to choose the receiving device in the macOS panel.
-- `blob:` URLs cannot be downloaded directly by this extension.
-- DRM-protected videos and segmented streaming formats such as HLS/DASH usually cannot be captured as one complete file.
-- Some sites may block direct downloads through cookies, referrers, signed URLs, or other anti-hotlinking checks.
-- The native host is installed locally and is not suitable for Chrome Web Store distribution without additional packaging and review work.
+- AirDrop 面板打开后，仍然需要你手动选择接收设备。
+- `blob:` URL 不能被这个扩展直接下载。
+- DRM 视频、HLS/DASH 这类分片流媒体，通常无法被扩展直接保存成一个完整文件。
+- 一些网站可能会通过 cookie、referrer、签名 URL 或防盗链策略阻止直接下载。
+- native host 是本地安装的程序。如果要上 Chrome Web Store，还需要额外的打包、签名和审核流程。
 
-## Troubleshooting
+## 常见问题
 
-### macOS says `install.command` cannot be opened
+### macOS 提示 `install.command` 无法打开
 
-This happens when the project was downloaded from the internet and macOS attaches a quarantine flag. Use the Terminal install path instead:
+这是因为项目从互联网下载后带有 quarantine 隔离标记。推荐用 Terminal 安装：
 
 ```bash
 ./install.command
 ```
 
-Or remove the quarantine flag from this project folder:
+也可以在项目目录移除隔离标记：
 
 ```bash
 xattr -dr com.apple.quarantine .
 ```
 
-### AirDrop does not open
+### AirDrop 没有打开
 
-Reinstall the native host with the exact extension ID shown on your browser extension page:
-
-```bash
-./scripts/install_native_host.sh <extension_id>
-```
-
-Then reload the browser extension.
-
-### The AirDrop panel closes too quickly
-
-Make sure you are using the latest compiled native host:
+用浏览器扩展页面上显示的真实扩展 ID 重新安装 native host：
 
 ```bash
 ./scripts/install_native_host.sh <extension_id>
 ```
 
-The native host keeps the process alive until AirDrop succeeds, fails, or times out after 180 seconds.
+然后重新加载浏览器扩展。
 
-### The file downloads again
+### AirDrop 面板很快消失
 
-The extension checks the browser download history for the exact same source URL. It can reuse only completed downloads whose local files still exist.
+确认 native host 是最新版本：
 
-### `blob:` media does not work
+```bash
+./scripts/install_native_host.sh <extension_id>
+```
 
-`blob:` URLs are page-local object URLs. The extension cannot resolve them into a complete original media file without site-specific extraction logic.
+native host 会保持进程存活，直到 AirDrop 成功、失败，或 180 秒超时。
 
-## Development
+### 文件又被重复下载了
 
-Validate the extension files:
+扩展会按“完全相同的源 URL”检查浏览器下载历史。只有下载状态完成，并且本地文件仍然存在时，才会复用旧文件。
+
+### `blob:` 媒体不能用
+
+`blob:` URL 是网页内部生成的临时对象地址。扩展无法直接从它还原出完整原始媒体文件，除非为特定网站写额外提取逻辑。
+
+## 开发
+
+校验扩展文件：
 
 ```bash
 node -c extension/background.js
 node -e "JSON.parse(require('fs').readFileSync('extension/manifest.json', 'utf8')); console.log('manifest ok')"
 ```
 
-Build the native host manually:
+手动编译 native host：
 
 ```bash
 xcrun swiftc native-host/AirDropNativeHost.swift -o build/com.vibecoding.airdrop_media
 ```
 
-Install or reinstall the native host:
+安装或重新安装 native host：
 
 ```bash
 ./scripts/install_native_host.sh <extension_id>
 ```
 
-## Project layout
+## 项目结构
 
 ```text
 install.command
@@ -185,6 +184,6 @@ scripts/
   install_native_host.sh
 ```
 
-## License
+## 许可证
 
 MIT
