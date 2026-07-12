@@ -1,4 +1,5 @@
-const MENU_ID = "airdrop-media-download";
+const DOWNLOAD_MENU_ID = "airdrop-media-download";
+const SCREENSHOT_MENU_ID = "airdrop-visible-tab-screenshot";
 const HOST_NAME = "com.vibecoding.airdrop_media";
 
 const pendingDownloads = new Map();
@@ -7,15 +8,30 @@ const pendingUrls = new Set();
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
-      id: MENU_ID,
+      id: DOWNLOAD_MENU_ID,
       title: "下载并用 AirDrop 发送",
       contexts: ["image", "video", "audio", "link"]
+    });
+
+    chrome.contextMenus.create({
+      id: SCREENSHOT_MENU_ID,
+      title: "截图并用 AirDrop 发送",
+      contexts: ["page", "image", "video", "audio", "link", "selection"]
     });
   });
 });
 
-chrome.contextMenus.onClicked.addListener((info) => {
-  if (info.menuItemId !== MENU_ID) return;
+chrome.action.onClicked.addListener((tab) => {
+  captureVisibleTabAndAirDrop(tab?.windowId);
+});
+
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === SCREENSHOT_MENU_ID) {
+    captureVisibleTabAndAirDrop(tab?.windowId);
+    return;
+  }
+
+  if (info.menuItemId !== DOWNLOAD_MENU_ID) return;
 
   const url = info.srcUrl || info.linkUrl;
   if (!url) {
@@ -80,6 +96,39 @@ function startDownload(url) {
   });
 }
 
+function captureVisibleTabAndAirDrop(windowId) {
+  chrome.tabs.captureVisibleTab(windowId, { format: "png" }, (dataUrl) => {
+    if (chrome.runtime.lastError || !dataUrl) {
+      notify(`截图失败：${chrome.runtime.lastError?.message || "未知错误"}`);
+      return;
+    }
+
+    const timestamp = formatTimestamp(new Date());
+    chrome.downloads.download({
+      url: dataUrl,
+      filename: `AirDrop-Media/Screenshot-${timestamp}.png`,
+      saveAs: false
+    }, (downloadId) => {
+      if (chrome.runtime.lastError || !downloadId) {
+        notify(`截图保存失败：${chrome.runtime.lastError?.message || "未知错误"}`);
+        return;
+      }
+
+      pendingDownloads.set(downloadId, { type: "screenshot", startedAt: Date.now() });
+      openIfDownloadAlreadyComplete(downloadId);
+    });
+  });
+}
+
+function openIfDownloadAlreadyComplete(downloadId) {
+  chrome.downloads.search({ id: downloadId }, (items) => {
+    const item = items && items[0];
+    if (item?.state === "complete" && pendingDownloads.has(downloadId)) {
+      openDownloadedFileWithAirDrop(downloadId);
+    }
+  });
+}
+
 function openDownloadedFileWithAirDrop(downloadId) {
   chrome.downloads.search({ id: downloadId }, (items) => {
     const pending = pendingDownloads.get(downloadId);
@@ -116,4 +165,17 @@ function notify(message) {
     title: "AirDrop Media",
     message
   });
+}
+
+function formatTimestamp(date) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate())
+  ].join("-") + "-" + [
+    pad(date.getHours()),
+    pad(date.getMinutes()),
+    pad(date.getSeconds())
+  ].join("");
 }

@@ -1,13 +1,14 @@
 {
   "manifest_version": 3,
   "name": "AirDrop Media",
-  "description": "Download an image or video from the page and open the macOS AirDrop panel for it.",
-  "version": "0.1.0",
+  "description": "Download page media or capture the visible tab, then open the macOS AirDrop panel.",
+  "version": "0.2.0",
   "permissions": [
     "contextMenus",
     "downloads",
     "nativeMessaging",
-    "notifications"
+    "notifications",
+    "activeTab"
   ],
   "background": {
     "service_worker": "background.js"
@@ -19,7 +20,7 @@
     "128": "icon-128.png"
   },
   "action": {
-    "default_title": "AirDrop Media",
+    "default_title": "截图并用 AirDrop 发送",
     "default_icon": {
       "16": "icon-16.png",
       "32": "icon-32.png",
