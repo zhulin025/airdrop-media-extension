@@ -3,7 +3,5 @@
   "description": "Open downloaded browser media in the macOS AirDrop sharing panel.",
   "path": "__HOST_PATH__",
   "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://__EXTENSION_ID__/"
-  ]
+  "allowed_origins": __ALLOWED_ORIGINS__
 }

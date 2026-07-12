@@ -30,7 +30,18 @@ Browser extensions cannot directly call macOS AirDrop from the page sandbox. Thi
 xcode-select --install
 ```
 
-## Install
+## Quick install
+
+1. Download or clone this repository.
+2. Double-click `install.command`.
+3. The installer copies the extension folder path to your clipboard and opens the browser extension page.
+4. In Chrome or Edge, enable developer mode, click `Load unpacked`, and select the `extension/` folder.
+5. Return to the installer window and press Return. It detects the extension ID and installs the native host automatically.
+6. Reload the extension if the browser page was already open.
+
+Browsers do not allow a normal local script to silently install an unpacked extension. That one confirmation in Chrome/Edge is still required.
+
+## Manual install
 
 1. Open your browser's extension page:
    - Chrome: `chrome://extensions`
@@ -118,6 +129,7 @@ Install or reinstall the native host:
 ## Project layout
 
 ```text
+install.command
 assets/
   logo.svg
 extension/
